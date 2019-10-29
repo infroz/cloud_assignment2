@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"repocheck"
+	"repocheck/commits"
 )
 
 const url = "/repocheck/v1/"
@@ -19,7 +20,7 @@ func main() {
 
 	http.HandleFunc("/", repocheck.HandlerNil)
 
-	http.HandleFunc(url+"commits", repocheck.HandlerCommits)
+	http.HandleFunc(url+"commits", commits.HandlerCommits)
 	//http.HandleFunc(url+"languages", repocheck.HandlerNil)
 	//http.HandleFunc(url+"issues", repocheck.HandlerNil)
 	//http.HandleFunc(url+"status", repocheck.HandlerNil)

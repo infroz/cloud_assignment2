@@ -1,4 +1,4 @@
-package repocheck
+package commits
 
 import (
 	"fmt"
@@ -13,6 +13,7 @@ import (
  *		url: /repocheck/v1/commits?limit=[]&auth=[authentication token]
  */
 
+// HandlerCommits - Handler for any requests to /v1/commits
 func HandlerCommits(w http.ResponseWriter, r *http.Request) {
 	// Accept only GET requests
 	switch r.Method {
@@ -22,6 +23,6 @@ func HandlerCommits(w http.ResponseWriter, r *http.Request) {
 	default:
 		// Methods not allowed - Returns 405
 		fmt.Println("HandlerCommits.go: Method not Allowed")
-		http.Error(w, "Method not allowed: ", http.StatusMethodNotAllowed)
+		http.Error(w, "Method not allowed: ", http.StatusMethodNotAllowed /* 405 */)
 	}
 }
