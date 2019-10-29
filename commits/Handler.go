@@ -13,12 +13,15 @@ import (
  *		url: /repocheck/v1/commits?limit=[]&auth=[authentication token]
  */
 
-// HandlerCommits - Handler for any requests to /v1/commits
-func HandlerCommits(w http.ResponseWriter, r *http.Request) {
+// API - BASE API URL FOR REQUESTS
+const API = "https://git.gvk.idi.ntnu.no"
+
+// Handler - Handler for any requests to /v1/commits
+func Handler(w http.ResponseWriter, r *http.Request) {
 	// Accept only GET requests
 	switch r.Method {
 	case http.MethodGet:
-		// Checked for GET method...
+		// Below Code is executed if Method is GET
 
 	default:
 		// Methods not allowed - Returns 405
