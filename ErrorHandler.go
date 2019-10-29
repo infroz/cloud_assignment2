@@ -1,0 +1,5 @@
+package repocheck
+
+func ErrorHandler() {
+
+}
