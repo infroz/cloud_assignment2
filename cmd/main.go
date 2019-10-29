@@ -8,7 +8,7 @@ import (
 	"repocheck"
 )
 
-const url = "repocheck/v1/"
+const url = "/repocheck/v1/"
 
 func main() {
 	fmt.Println("Assignment2")
