@@ -5,9 +5,13 @@ import (
 	"net/http"
 )
 
-func ErrorHandler(err error, w http.ResponseWriter) {
+// ErrorHandler - err is error, s is message, w is http response
+func ErrorHandler(err error, w http.ResponseWriter, s string) {
+	if s == nil {
+		s = "Error" // standard message
+	}
 	if err != nil {
-		log.Println(err)
-		http.Error(w, "Error:", http.StatusBadRequest)
+		log.Fatalln(err)
+		http.Error(w, s, http.StatusBadRequest)
 	}
 }

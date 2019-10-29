@@ -19,7 +19,7 @@ func main() {
 
 	http.HandleFunc("/", repocheck.HandlerNil)
 
-	//http.HandleFunc(url+"commits", repocheck.HandlerNil)
+	http.HandleFunc(url+"commits", repocheck.HandlerCommits)
 	//http.HandleFunc(url+"languages", repocheck.HandlerNil)
 	//http.HandleFunc(url+"issues", repocheck.HandlerNil)
 	//http.HandleFunc(url+"status", repocheck.HandlerNil)
