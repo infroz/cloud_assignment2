@@ -8,11 +8,11 @@ import (
 	"strconv"
 )
 
-func getProjects() []project {
+func getProjects(auth string) []project {
 	var store []project
 	req := "projects?per_page=100&private_token="
 	client := http.DefaultClient
-	resp := repocheck.GetRequest(client, repocheck.API+req+repocheck.AuthToken)
+	resp := repocheck.GetRequest(client, repocheck.API+req+auth)
 	pages, err := strconv.Atoi(resp.Header.Get("X-Total-Pages"))
 	if err != nil {
 		log.Fatalln(err)

@@ -1,9 +1,7 @@
 package commits
 
 import (
-	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -21,19 +19,15 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		// Below Code is executed if Method is GET
-		var store []project
-		store = getProjects() // Gets all project id's
 
-		// Encode new structure to JSON format
-		enc, err := json.Marshal(store)
-		if err != nil {
-			log.Fatalln(err)
+		Limit := r.URL.Query().Get("limit")
+		if Limit == "" {
+			Limit = "5"
 		}
+		Auth := r.URL.Query().Get("auth")
 
-		// Gives JSON response for requests
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(enc)
+		var store []project
+		store = getProjects(Auth) // Gets all project id's
 
 	default:
 		// Methods not allowed - Returns 405
