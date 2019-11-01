@@ -1,7 +1,9 @@
 package commits
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -13,15 +15,25 @@ import (
  *		url: /repocheck/v1/commits?limit=[]&auth=[authentication token]
  */
 
-// API - BASE API URL FOR REQUESTS
-const API = "https://git.gvk.idi.ntnu.no"
-
 // Handler - Handler for any requests to /v1/commits
 func Handler(w http.ResponseWriter, r *http.Request) {
 	// Accept only GET requests
 	switch r.Method {
 	case http.MethodGet:
 		// Below Code is executed if Method is GET
+		var store []project
+		store = getProjects() // Gets all project id's
+
+		// Encode new structure to JSON format
+		enc, err := json.Marshal(store)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		// Gives JSON response for requests
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(enc)
 
 	default:
 		// Methods not allowed - Returns 405
