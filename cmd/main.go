@@ -20,10 +20,10 @@ func main() {
 
 	http.HandleFunc("/", repocheck.HandlerNil)
 
-	http.HandleFunc(url+"commits", commits.HandlerCommits)
-	//http.HandleFunc(url+"languages", repocheck.HandlerNil)
-	//http.HandleFunc(url+"issues", repocheck.HandlerNil)
-	//http.HandleFunc(url+"status", repocheck.HandlerNil)
+	http.HandleFunc(url+"commits", commits.Handler)
+	//http.HandleFunc(url+"languages", languages.Handler)
+	//http.HandleFunc(url+"issues", issues.Handler)
+	//http.HandleFunc(url+"status", status.Handler)
 
 	fmt.Println("Listening on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
