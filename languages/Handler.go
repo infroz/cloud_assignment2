@@ -111,8 +111,12 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			limitedRes = append(limitedRes, response[i])
 		}
 
+		var onlyLang []string
+		for i := range limitedRes {
+			onlyLang = append(onlyLang, limitedRes[i].Lang)
+		}
 		// Encode new structure to JSON format
-		enc, err := json.Marshal(limitedRes)
+		enc, err := json.Marshal(onlyLang)
 		if err != nil {
 			log.Fatalln(err)
 		}
