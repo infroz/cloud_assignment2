@@ -10,6 +10,7 @@ import (
 	"repocheck/issues"
 	"repocheck/languages"
 	"repocheck/status"
+	"repocheck/webhooks"
 )
 
 const url = "/repocheck/v1/"
@@ -26,6 +27,7 @@ func main() {
 	http.HandleFunc(url+"languages", languages.Handler)
 	http.HandleFunc(url+"issues", issues.Handler)
 	http.HandleFunc(url+"status", status.Handler)
+	http.HandleFunc(url+"webhook", webhooks.WebhookHandler)
 
 	fmt.Println("Listening on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
