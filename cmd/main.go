@@ -29,6 +29,10 @@ func main() {
 	http.HandleFunc(url+"status", status.Handler)
 	http.HandleFunc(url+"webhook", webhooks.WebhookHandler)
 
+	go func() {
+		db := FirestoreDatabase{ProjectID: repocheck.FirebaseID, CollectionName: collectionStudent}
+	}()
+
 	fmt.Println("Listening on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
