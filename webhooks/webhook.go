@@ -5,16 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
-	"strconv"
+	"strings"
+	"time"
 )
-
-type WebhookRegistration struct {
-	Url   string `json:"url"`
-	Event string `json:"event"`
-}
-
-var webhooks []WebhookRegistration // Webhook db
 
 /*
 	Handles webhook registration (POST) and lookup (GET) requests.
@@ -24,55 +19,100 @@ func WebhookHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodPost:
 		// Expects incoming body in terms of WebhookRegistration struct
-		webhook := WebhookRegistration{}
-		err := json.NewDecoder(r.Body).Decode(&webhook)
+
+		err := json.NewDecoder(r.Body).Decode(&Wh)
 		if err != nil {
 			http.Error(w, "Something went wrong: "+err.Error(), http.StatusBadRequest)
 		}
-		webhooks = append(webhooks, webhook)
-		// Note: Approach does not guarantee persistence or permanence of resource id (for CRUD)
-		fmt.Fprintln(w, len(webhooks)-1)
-		fmt.Println("Webhook " + webhook.Url + " has been registered.")
+
+		Wh.Time = time.Now()
+
+		Wh.Event = strings.ToLower(Wh.Event)
+
+		err = Add()
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		fmt.Println("Webhook " + Wh.Url + " has been registered.")
 	case http.MethodGet:
+		var webhook []Webhook // Webhook db
+		webhook, err := Read()
+		if err != nil {
+			log.Fatalln(err)
+		}
 		// For now just return all webhooks, don't respond to specific resource requests
-		err := json.NewEncoder(w).Encode(webhooks)
+		err = json.NewEncoder(w).Encode(webhook)
 		if err != nil {
 			http.Error(w, "Something went wrong: "+err.Error(), http.StatusInternalServerError)
 		}
-	default:
-		http.Error(w, "Invalid method "+r.Method, http.StatusBadRequest)
-	}
-}
+	case http.MethodDelete:
+		err := json.NewDecoder(r.Body).Decode(&Wh)
+		if err != nil {
+			log.Fatalln(err)
+		}
 
-/*
-*  Invokes the web service to trigger event. Currently only responds to POST requests.
- */
-func ServiceHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodPost:
-		fmt.Println("Received POST request...")
-		for _, v := range webhooks {
-			go CallUrl(v.Url, "Response on registered event in webhook demo: "+v.Event)
+		err = Delete(Wh.ID)
+		if err != nil {
+			log.Fatalln(err)
 		}
 	default:
 		http.Error(w, "Invalid method "+r.Method, http.StatusBadRequest)
 	}
 }
 
-/*
-	Calls given URL with given content and awaits response (status and body).
-*/
-func CallUrl(url string, content string) {
-	fmt.Println("Attempting invocation of url " + url + " ...")
-	res, err := http.Post(url, "string", bytes.NewReader([]byte(content)))
-	if err != nil {
-		fmt.Println("Error in HTTP request: " + err.Error())
+func WebhookHandlerID(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		var webhook []Webhook
+
+		webhook, err := Read()
+		if err != nil {
+			log.Fatalln(err)
+		}
+		parts := strings.Split(r.URL.Path, "/")
+
+		for i := range webhook {
+			if webhook[i].ID == parts[4] {
+				err = json.NewEncoder(w).Encode(webhook[i])
+				if err != nil {
+					log.Fatalln(err)
+				}
+			}
+		}
+	default:
+		http.Error(w, "Invalid method "+r.Method, http.StatusBadRequest)
 	}
-	response, err := ioutil.ReadAll(res.Body)
+}
+
+func URLCaller(event string, params string, timeStamp time.Time) {
+	var webhook []Webhook
+	webhook, err := Read()
 	if err != nil {
-		fmt.Println("Something is wrong with invocation response: " + err.Error())
+		log.Fatalln(err)
 	}
 
-	fmt.Println("Webhook invoked. Received status code " + strconv.Itoa(res.StatusCode) +
-		" and body: " + string(response))
+	for _, i := range webhook {
+		if i.Event == event {
+			var request = Invocation{Event: event, Parameters: params, Timestamp: timeStamp.String()}
+
+			requestBody, err := json.Marshal(request)
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			resp, err := http.Post(i.Url, "json", bytes.NewReader(requestBody))
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			response, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			log.Println("Webhook invoked, body: " + string(response))
+		}
+	}
+
 }

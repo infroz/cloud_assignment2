@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"repocheck/webhooks"
 	"sort"
 	"strconv"
+	"time"
 )
 
 /*		* The endpoint should accept GET requests with empty payload
@@ -76,6 +78,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write(enc)
+
+		webhooks.URLCaller("commit", "limit="+limit+" and auth="+Auth, time.Now())
 	default:
 		// Methods not allowed - Returns 405
 		fmt.Println("HandlerCommits.go: Method not Allowed")

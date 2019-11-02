@@ -6,8 +6,10 @@ import (
 	"log"
 	"net/http"
 	"repocheck/commits"
+	"repocheck/webhooks"
 	"sort"
 	"strconv"
+	"time"
 )
 
 type lang struct {
@@ -32,7 +34,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Fprintf(w, "Body is actually nil")
 	}
- */
+	*/
 
 	// Accept only GET requests
 	switch r.Method {
@@ -99,12 +101,13 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		// Sorts response
 		sort.Slice(response, func(i, j int) bool { return response[j].Count < response[i].Count })
 
-
 		// Limits response
 		var limitedRes []re
-	  limitInt, err := strconv.Atoi(Limit)
-		if err != nil {log.Fatalln(err)}
-		for i := 0; i < limitInt; i++{
+		limitInt, err := strconv.Atoi(Limit)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		for i := 0; i < limitInt; i++ {
 			limitedRes = append(limitedRes, response[i])
 		}
 
@@ -118,6 +121,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write(enc)
+
+		webhooks.URLCaller("languages", "limit="+Limit+" and auth="+Auth, time.Now())
 	default:
 		// Methods not allowed - Returns 405
 		fmt.Println("HandlerCommits.go: Method not Allowed or Implemented" + r.Method)

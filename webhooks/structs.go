@@ -1,18 +1,18 @@
 package webhooks
 
-type Webhooks struct {
-	Webhooks []Webhook
-}
+import "time"
 
 type Webhook struct {
-	Id    string `json:"id"`
-	Event string `json:"event"`
-	Url   string `json:"url"`
-	Time  string `json:"time"`
+	ID    string    `json:"id"`
+	Event string    `json:"event"`
+	Url   string    `json:"url"`
+	Time  time.Time `json:"time"`
 }
 
 type Invocation struct {
-	Event  string `json:"event"`
-	Params string `json:"parameters"`
-	Time   string `json:"time"`
+	Event      string `json:"event"`
+	Parameters string `json:"parameters"`
+	Timestamp  string `json:"time"`
 }
+
+var Wh = Webhook{}
