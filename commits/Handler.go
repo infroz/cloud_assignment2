@@ -31,9 +31,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 		Auth := r.URL.Query().Get("auth")
 
-		var projectStore []reposTmp
+		var projectStore []ReposTmp
 
-		projectStore = getProjects(Auth) // Gets all project id's
+		projectStore = GetProjects(Auth) // Gets all project id's
 
 		var response commits
 
