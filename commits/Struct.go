@@ -4,7 +4,9 @@ type commits struct {
 	Repos []repos
 	Auth  bool
 }
-type reposTmp struct {
+
+// ReposTmp structure
+type ReposTmp struct {
 	Path    string `json:"path_with_namespace"`
 	ID      int    `json:"id"`
 	Commits int
