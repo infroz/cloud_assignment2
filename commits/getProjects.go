@@ -8,27 +8,25 @@ import (
 	"strconv"
 )
 
-func getProjects(auth string) []project {
-	var store []project
-	req := "projects?per_page=100&private_token="
+func getProjects(auth string) []reposTmp {
+	var storeTmp []reposTmp
+
+	request := repocheck.API + "projects?per_page=100&private_token=" + auth
+
 	client := http.DefaultClient
-	resp := repocheck.GetRequest(client, repocheck.API+req+auth)
-	pages, err := strconv.Atoi(resp.Header.Get("X-Total-Pages"))
+	response := repocheck.GetRequest(client, request)
+	// Amount of pages to loop
+	pages, err := strconv.Atoi(response.Header.Get("X-Total-Pages"))
 	if err != nil {
 		log.Fatalln(err)
 	}
-	log.Println(pages)
-	for i := 1; i <= pages; i++ {
-		resp := repocheck.GetRequest(client, repocheck.API+req+repocheck.AuthToken+"&page="+strconv.Itoa(i))
-		var storeTmp []project
-		err = json.NewDecoder(resp.Body).Decode(&storeTmp)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		log.Println("Added page: " + strconv.Itoa(i))
-		store = append(store, storeTmp...)
-	}
 
-	// resp.Header.Get("X-Total")
-	return store
+	// Gets all data from each page
+	for i := 1; i <= pages; i++ {
+		var tmp []reposTmp // Temporary stores id to append to store
+		response = repocheck.GetRequest(client, request+"&page="+strconv.Itoa(i))
+		err = json.NewDecoder(response.Body).Decode(&tmp)
+		storeTmp = append(storeTmp, tmp...)
+	}
+	return storeTmp
 }

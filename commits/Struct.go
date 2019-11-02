@@ -1,9 +1,16 @@
 package commits
 
-/*  Created this struct incase I need to get more data later from
- *  the projects request, for now this will be used to count
- *  commits from each project via /project/id/repository/commits
- */
-type project struct {
-	ID int `json:"id"`
+type commits struct {
+	Repos []repos
+	Auth  bool
+}
+type reposTmp struct {
+	Path    string `json:"path_with_namespace"`
+	ID      int    `json:"id"`
+	Commits int
+}
+
+type repos struct {
+	Repository string
+	Commits    int
 }
