@@ -7,3 +7,17 @@ This includes two parts,
 - interface for the registration of Webhooks for invocation upon certain events.
 
 The developed services will be dockerised and deployed on OpenStack (we will talk about both those in upcoming sessions). For persistence, use a NoSQL storage option of your choice.
+
+## How to run
+In /cmd/ go run main.go
+
+## Endpoints
+http://url:port/repocheck/v1/commits{?limit=[0-9]+{&auth=<access-token>}}
+  returns repositories with most commits
+  
+http://url:port//repocheck/v1/languages{?limit=[0-9]+{&auth=<access-token>}}
+   Returns most popular languages in order descending
+http://url:port//repocheck/v1/issues{?type=(users|labels){&auth=<access-token>}}
+  Not implemented
+http://url:port//repocheck/v1/status
+  Service status
